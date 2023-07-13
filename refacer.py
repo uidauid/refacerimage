@@ -215,6 +215,13 @@ class Refacer:
                 results = list(tqdm(executor.map(self.process_faces, frames), total=len(frames),desc="Processing frames"))
             for result in results:
                 output.write(result)
+    def reface_image(self, image, faces):
+          self.prepare_faces(faces)
+          processed_image = self.process_faces(image)
+          output_image_path = os.path.join('out', 'processed_image.jpg')
+          cv2.imwrite(output_image_path, processed_image)
+
+    return output_image_path 
 
     def reface(self, video_path, faces):
         self.__check_video_has_audio(video_path)
