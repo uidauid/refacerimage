@@ -34,6 +34,40 @@ class Refacer:
         self.total_mem = psutil.virtual_memory().total
         self.__init_apps()
 
+    def reface_image(self, image_path, faces):
+        self.prepare_faces(faces)  # Preparar las caras para el reemplazo
+
+        image = cv2.imread(image_path)  # Leer la imagen de entrada
+
+        # Procesar la imagen
+        processed_image = self.process_faces(image) 
+
+        # Guardar la imagen procesada
+        output_image_path = os.path.join('out', Path(image_path).name)
+        cv2.imwrite(output_image_path, processed_image)
+
+        return output_image_path  # Devolver la ruta de la imagen procesada
+
+    def process_faces(self, image):
+        # Detectar las caras en la imagen
+        faces = self.__get_faces(image)
+
+        # Reemplazar las caras en la imagen
+        for face in faces:
+            if self.first_face:
+                # Si es la primera cara, simplemente reemplace
+                image = self.face_swapper.get(image, face, self.replacement_faces[0][1], paste_back=True)
+                break
+            else:
+                # Si no es la primera cara, comprueba la similitud
+                face_similarity = self.rec_app.compute_sim(face.embedding)
+                for replacement_face in self.replacement_faces:
+                    sim = face_similarity(replacement_face[0])
+                    if sim >= replacement_face[2]:
+                        image = self.face_swapper.get(image, face, replacement_face[1], paste_back=True)
+
+        return image  # Devolver la imagen con las caras reemplazadas
+
     def __check_providers(self):
         if self.force_cpu :
             self.providers = ['CPUExecutionProvider']
