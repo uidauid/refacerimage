@@ -44,6 +44,14 @@ def connect(token, port, options):
     else:
         print(f'ngrok connected to localhost:{port}! URL: {public_url}\n'
                'You can use this link after the launch is complete.')
+def run(image, faces):
+    # Aquí 'image' ya es un array de NumPy, no una ruta de archivo.
+    return refacer.reface_image(image, faces)
+
+inputs = [gr.inputs.Image(), gr.inputs.Textbox()]
+outputs = gr.outputs.Image()
+
+gr.Interface(fn=run, inputs=inputs, outputs=outputs).launch()
 
 
 def run(*vars):
