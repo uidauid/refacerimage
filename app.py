@@ -47,7 +47,7 @@ def connect(token, port, options):
 
 
 def run(*vars):
-    video_path=vars[0]
+    image_path = vars[0]
     origins=vars[1:(num_faces+1)]
     destinations=vars[(num_faces+1):(num_faces*2)+1]
     thresholds=vars[(num_faces*2)+1:]
@@ -61,7 +61,7 @@ def run(*vars):
                 'threshold':thresholds[k]
             })
 
-    return refacer.reface(video_path,faces)
+    return refacer.reface_image(image_path,faces)
 
 origin = []
 destination = []
@@ -71,8 +71,8 @@ with gr.Blocks() as demo:
     with gr.Row():
         gr.Markdown("# Refacer")
     with gr.Row():
-        video=gr.Video(label="Original video",format="mp4")
-        video2=gr.Video(label="Refaced video",interactive=False,format="mp4")
+         image=gr.Image(label="Original image")
+         image2=gr.Image(label="Refaced image", interactive=False)
 
     for i in range(0,num_faces):
         with gr.Tab(f"Face #{i+1}"):
@@ -84,7 +84,7 @@ with gr.Blocks() as demo:
     with gr.Row():
         button=gr.Button("Reface", variant="primary")
 
-    button.click(fn=run,inputs=[video]+origin+destination+thresholds,outputs=[video2])
+    button.click(fn=run,inputs=[image]+origin+destination+thresholds,outputs=[image2])
     
 if args.ngrok is not None:
     connect(args.ngrok, args.server_port, {'region': args.ngrok_region, 'authtoken_from_env': False})
